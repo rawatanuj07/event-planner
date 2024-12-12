@@ -124,7 +124,7 @@ export default function Home() {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <h1 className="text-right">Event Name</h1>
+                  <h1 className="text-right">Event name</h1>
                   <input
                     id="name"
                     placeholder="Enter name of event"

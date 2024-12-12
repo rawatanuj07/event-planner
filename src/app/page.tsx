@@ -6,16 +6,7 @@ import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import TimePicker from "react-time-picker";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { saveEvent } from "./utils/eventsave";
 
 export default function Home() {
   console.log("dates are ", generateDate());
@@ -23,8 +14,45 @@ export default function Home() {
   const currentDate = dayjs();
   const [today, setToday] = useState(currentDate);
   const [selectDate, setSelectDate] = useState(currentDate);
+  const [startTime, setStartTime] = useState<string | null>("00:00");
   const [endTime, setEndTime] = useState<string | null>("00:00");
-  const [value, setValue] = useState<string | null>("00:00");
+  const [description, setDescription] = useState(""); // State for description
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // New state for controlling the dialog visibility
+  const [name, setName] = useState("");
+  const [events, setEvents] = useState<any[]>([]); // Storing events for the selected date
+
+  const handleDateClick = (date: any) => {
+    setSelectDate(date); // Set the selected date
+    // Get stored events from localStorage
+    const storedEvents = JSON.parse(localStorage.getItem("events") || "[]");
+
+    // Format the selected date to match the format stored in the events
+    const formattedDate = date.format("ddd MMM DD YYYY");
+
+    // Filter events based on the formatted date
+    const filteredEvents = storedEvents.filter(
+      (event: any) => event.date === formattedDate
+    );
+
+    setEvents(filteredEvents); // Set filtered events to display
+  };
+  // Function to handle double-click (to open modal)
+  const handleDateDoubleClick = (date: any) => {
+    setSelectDate(date); // Set the selected date
+    setIsDialogOpen(true); // Open the dialog modal
+  };
+  // Save event data to localStorage
+  const save = () => {
+    setIsDialogOpen(false);
+    saveEvent(
+      name,
+      description,
+      startTime,
+      endTime,
+      selectDate,
+      setIsDialogOpen
+    );
+  }; // Use the imported function
 
   return (
     <div className="flex gap-10 sm:divide-x justify-center sm:w-1/2 mx-auto  h-screen items-center sm:flex-row flex-col">
@@ -93,9 +121,8 @@ export default function Home() {
                         ? "bg-blue-500 text-white"
                         : ""
                     } h-10 w-10 grid place-content-center rounded-full hover:bg-blue-600 hover:text-black transition-all hover:cursor-pointer`}
-                    onClick={() => {
-                      setSelectDate(date);
-                    }}
+                    onClick={() => handleDateClick(date)}
+                    onDoubleClick={() => handleDateDoubleClick(date)}
                   >
                     {date.date()}
                   </h1>
@@ -109,34 +136,52 @@ export default function Home() {
         <h1 className="font-semibold">
           Schedule for {selectDate.toDate().toDateString()}
         </h1>
-        <p>No meetings for today.</p>
+        {/* Displayinng events for the selected date */}
+        {events.length === 0 ? (
+          <p>No meetings for today.</p>
+        ) : (
+          <div>
+            {events.map((event, index) => (
+              <div key={index} className="my-2 p-2 border-b">
+                <h3 className="font-semibold">Event name: {event.name}</h3>
+                <p>
+                  Time: {event.startTime} - {event.endTime}
+                </p>
+                <p>{event.description}</p>
+              </div>
+            ))}
+          </div>
+        )}{" "}
         <div className="font-semibold">
-          <Dialog>
-            <DialogTrigger asChild>
-              <button className="text-green-600">Add Events</button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[525px] bg-pink-900 glass">
-              <DialogHeader>
-                <DialogTitle>Add Event</DialogTitle>
-                <DialogDescription>
-                  You can add events from here. Click save when you're done.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <h1 className="text-right">Event name</h1>
+          {/* Custom Dialog */}
+          {isDialogOpen && (
+            <div className="fixed  inset-0 bg-black/80 flex items-center justify-center z-50">
+              <div className="bg-white glass p-6 rounded-lg shadow-lg w-96">
+                <h2 className="text-xl font-semibold my-4 text-center">
+                  Event for {selectDate.format("MMMM D, YYYY")}
+                </h2>
+                <p className="text-center">
+                  Here you can add details for the event.
+                </p>
+                <div className="flex items-center my-4 gap-4">
+                  <p className="w-1/4 whitespace-nowrap font-semibold">
+                    Event Name
+                  </p>
                   <input
                     id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     placeholder="Enter name of event"
-                    className="col-span-3 border border-black rounded text-black"
+                    className="flex-1 border border-black rounded text-black"
                   />
                 </div>
+
                 {/* Start Time Picker */}
-                <div className="my-2 w-full">
+                <div className="my-4 w-full">
                   <label className="block">Start Time</label>
                   <TimePicker
-                    value={endTime}
-                    onChange={setEndTime}
+                    value={startTime}
+                    onChange={setStartTime}
                     format="hh:mm a" // 12-hour format with AM/PM
                     className="w-full p-2 border rounded"
                   />
@@ -151,17 +196,30 @@ export default function Home() {
                     className="w-full p-2 border rounded"
                   />
                 </div>
-              </div>
-              <DialogFooter>
+                <div className="flex items-center my-4 gap-4">
+                  <div className="flex flex-col">
+                    <h6 className="w-1/4 whitespace-nowrap text-sm">
+                      Description
+                    </h6>
+                    <p>(optional)</p>
+                  </div>
+                  <input
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Enter description for the event"
+                    className="flex-1 border border-black rounded text-black"
+                  />
+                </div>
                 <button
-                  type="submit"
-                  className="bg-green-400 text-black text-md rounded p-2"
+                  className="mt-4 bg-green-500 text-white p-2 rounded"
+                  onClick={() => save()} // Close the dialog
                 >
-                  Save changes
+                  Save
                 </button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

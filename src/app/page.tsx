@@ -64,6 +64,10 @@ export default function Home() {
   return (
     <div className="flex gap-10 sm:divide-x justify-center sm:w-1/2 mx-auto  h-screen items-center sm:flex-row flex-col">
       <div className="w-96 h-auto glasss  ">
+        <h1 className="text-center p-2">
+          Double-Click on any date to add an event.
+        </h1>
+
         <div className="flex justify-between pt-2 px-2">
           <h1>
             {months[today.month()]}, {today.year()}

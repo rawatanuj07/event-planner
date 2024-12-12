@@ -19,9 +19,16 @@ export default function Home() {
   const [description, setDescription] = useState(""); // State for description
   const [isDialogOpen, setIsDialogOpen] = useState(false); // New state for controlling the dialog visibility
   const [name, setName] = useState("");
-  const [events, setEvents] = useState<any[]>([]); // Storing events for the selected date
+  interface Event {
+    name: string;
+    description: string;
+    startTime: string;
+    endTime: string;
+    date: string;
+  }
+  const [events, setEvents] = useState<Event[]>([]);
 
-  const handleDateClick = (date: any) => {
+  const handleDateClick = (date: dayjs.Dayjs) => {
     setSelectDate(date); // Set the selected date
     // Get stored events from localStorage
     const storedEvents = JSON.parse(localStorage.getItem("events") || "[]");
@@ -31,13 +38,13 @@ export default function Home() {
 
     // Filter events based on the formatted date
     const filteredEvents = storedEvents.filter(
-      (event: any) => event.date === formattedDate
+      (event: Event) => event.date === formattedDate
     );
 
     setEvents(filteredEvents); // Set filtered events to display
   };
   // Function to handle double-click (to open modal)
-  const handleDateDoubleClick = (date: any) => {
+  const handleDateDoubleClick = (date: dayjs.Dayjs) => {
     setSelectDate(date); // Set the selected date
     setIsDialogOpen(true); // Open the dialog modal
   };

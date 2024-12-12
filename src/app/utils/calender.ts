@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-export const generateDate = (month = dayjs().month(), year = dayjs().year()) =>{
+export const generateDate = (month: number = dayjs().month(), year: number = dayjs().year()): Array<{ date: dayjs.Dayjs, currentMonth: boolean, today: boolean }> => {
      
     const firstDateOfMonth = dayjs().year(year).month(month).startOf("month");
     const lastDateOfMonth = dayjs().year(year).month(month).endOf("month");
@@ -11,7 +11,7 @@ export const generateDate = (month = dayjs().month(), year = dayjs().year()) =>{
     // so they appear before the first day of the month in the calendar grid.
     for (let i = 0; i < firstDateOfMonth.day(); i++) {
         const date = firstDateOfMonth.subtract(i + 1, "day");    
-        arrayOfDate.unshift({date: date, currentMonth: false});
+        arrayOfDate.unshift({date: date, currentMonth: false, today: false});
     }
 
     // generate current month dates
@@ -24,7 +24,7 @@ export const generateDate = (month = dayjs().month(), year = dayjs().year()) =>{
 	const remaining = 42 - arrayOfDate.length;
 
     for (let i: any = lastDateOfMonth.date()+1; i<=lastDateOfMonth.date()+remaining; i++){
-        arrayOfDate.push({date: lastDateOfMonth.date(i), currentMonth: false});
+        arrayOfDate.push({date: lastDateOfMonth.date(i), currentMonth: false, today: false});
 
     }
     return arrayOfDate;

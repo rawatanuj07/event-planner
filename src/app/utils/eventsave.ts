@@ -1,13 +1,19 @@
 import dayjs from "dayjs";
-
+interface Event {
+    name: string;
+    description: string;
+    startTime: string;
+    endTime: string;
+    date: string;
+  }
 export const saveEvent = (
-  name: string,
-  description: string,
-  startTime: string | null,
-  endTime: string | null,
-  selectDate: any,
-  setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
-) => {
+    name: string,
+    description: string,
+    startTime: string | null,
+    endTime: string | null,
+    selectDate: dayjs.Dayjs,
+    setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
   if (name && startTime && endTime) {
     const eventData = {
       name,

@@ -1,21 +1,23 @@
 import dayjs from "dayjs";
+
 interface Event {
-    name: string;
-    description: string;
-    startTime: string;
-    endTime: string;
-    date: string;
-  }
+  name: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  date: string;
+}
+
 export const saveEvent = (
-    name: string,
-    description: string,
-    startTime: string | null,
-    endTime: string | null,
-    selectDate: dayjs.Dayjs,
-    setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
-  ) => {
+  name: string,
+  description: string,
+  startTime: string | null,
+  endTime: string | null,
+  selectDate: dayjs.Dayjs,
+  setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
+) => {
   if (name && startTime && endTime) {
-    const eventData = {
+    const eventData: Event = {
       name,
       description,
       startTime,
@@ -24,10 +26,10 @@ export const saveEvent = (
     };
 
     // Getting existing events from localStorage or initialize as empty array
-    const existingEvents = JSON.parse(localStorage.getItem("events") || "[]");
+    const existingEvents: Event[] = JSON.parse(localStorage.getItem("events") || "[]");
 
     // Check for conflicts (same name or overlapping time)
-    const isConflict = existingEvents.some((event: any) => {
+    const isConflict = existingEvents.some((event) => {
       return (
         // Check if the event's date and name are the same
         (event.date === eventData.date && event.name === eventData.name) ||

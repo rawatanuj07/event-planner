@@ -15,7 +15,7 @@ export const generateDate = (month: number = dayjs().month(), year: number = day
     }
 
     // generate current month dates
-    for (let i: any=firstDateOfMonth.date(); i<=lastDateOfMonth.date() ; i++){
+    for (let i: number=firstDateOfMonth.date(); i<=lastDateOfMonth.date() ; i++){
         arrayOfDate.push({date: firstDateOfMonth.date(i), currentMonth: true, today: firstDateOfMonth.date(i).toDate().toDateString()===dayjs().toDate().toDateString()
         });
     }
@@ -23,7 +23,7 @@ export const generateDate = (month: number = dayjs().month(), year: number = day
     //generate rest of the dates
 	const remaining = 42 - arrayOfDate.length;
 
-    for (let i: any = lastDateOfMonth.date()+1; i<=lastDateOfMonth.date()+remaining; i++){
+    for (let i: number = lastDateOfMonth.date()+1; i<=lastDateOfMonth.date()+remaining; i++){
         arrayOfDate.push({date: lastDateOfMonth.date(i), currentMonth: false, today: false});
 
     }

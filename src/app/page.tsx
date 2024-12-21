@@ -210,7 +210,7 @@ export default function Home() {
                 <div className="flex items-center my-4 gap-4">
                   <div className="flex flex-col">
                     <h6 className="w-1/4 whitespace-nowrap text-sm">
-                      Description
+                      Add Description
                     </h6>
                     <p>(optional)</p>
                   </div>
